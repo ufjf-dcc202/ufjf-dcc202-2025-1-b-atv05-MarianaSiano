@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetButton = document.getElementById('resetButton');
     const executeSolutionButton = document.getElementById('executeSolutionButton');
     const gameMessagesElement = document.getElementById('game-messages');
-    let selectedPiece = null; // A peça atualmente selecionada
+    const stepCounterElement = document.getElementById('step-counter'); //Novo elemento para o contador de passos
+    let selectedPiece = null; //A peça atualmente selecionada
 
     //Estado inicial do tabuleiro: 3 peças pretas, 1 slot vazio, 3 peças brancas
     const initialBoardState = [
@@ -77,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function handlePieceClick(event) {
         //Limpa mensagens anteriores
         displayMessage('');
+        displayStep(''); //Limpa o contador de passos
 
         const clickedPiece = event.target;
         const clickedIndex = parseInt(clickedPiece.dataset.index); //Índice da peça clicada
@@ -88,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if(selectedPiece) {
             //Se já houver uma peça selecionada, tenta mover a peça selecionada para o slot da peça clicada
             const selectedIndex = parseInt(selectedPiece.dataset.index);
-            const targetIndex = clickedIndex; //O slot da peça clicada é o alvo potencial
+            const targetIndex = clickedIndex; // O slot da peça clicada é o alvo potencial
 
             if(isValidMove(selectedIndex, targetIndex)) {
                 movePiece(selectedIndex, targetIndex);
@@ -118,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //Um movimento é válido APENAS se o targetIndex for o slot vazio.
         //A lógica de "pular uma peça" ou "deslizar" se refere à distância entre a peça e o slot vazio.
-        if (targetIndex !== emptySlotIndex) {
+        if(targetIndex !== emptySlotIndex) {
             return false; //Só pode mover para um slot vazio
         }
 
@@ -176,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {boolean} - Verdadeiro se o jogo estiver resolvido, falso caso contrário.
      */
     function checkWinCondition() {
-        // Compara o estado atual com o estado final desejado
+        //Compara o estado atual com o estado final desejado
         for(let i = 0; i < currentBoardState.length; i++) {
             if(currentBoardState[i] !== solvedBoardState[i]) {
                 return false;
@@ -188,12 +190,20 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Exibe uma mensagem para o usuário.
      * @param {string} message - A mensagem a ser exibida.
-     * @param {string} type - O tipo da mensagem ('success' ou 'error').
+     * @param {string} type - O tipo da mensagem ('success', 'error', 'info').
      */
     function displayMessage(message, type = 'error') {
         gameMessagesElement.textContent = message;
         gameMessagesElement.className = ''; //Limpa classes anteriores
-        gameMessagesElement.classList.add(type === 'success' ? 'message-success' : 'message-error');
+        gameMessagesElement.classList.add(`message-${type}`);
+    }
+
+    /**
+     * Exibe o contador de passos.
+     * @param {string} stepText - O texto do passo a ser exibido.
+     */
+    function displayStep(stepText) {
+        stepCounterElement.textContent = stepText;
     }
 
     //Reinicia o jogo para o estado inicial.
@@ -202,6 +212,31 @@ document.addEventListener('DOMContentLoaded', () => {
         renderBoard(); //Renderiza o tabuleiro com o estado reiniciado
         selectedPiece = null; //Garante que nenhuma peça esteja selecionada
         displayMessage(''); //Limpa as mensagens
+        displayStep(''); //Limpa o contador de passos
+    }
+
+    /**
+     * Adiciona destaque visual a uma peça e/ou slot.
+     * @param {number} pieceIndex - O índice da peça a ser destacada.
+     * @param {number} emptySlotIndex - O índice do slot vazio a ser destacado.
+     */
+    function highlightElements(pieceIndex, emptySlotIndex) {
+        const pieceElement = boardElement.querySelector(`.slot[data-index="${pieceIndex}"] .black-piece, .slot[data-index="${pieceIndex}"] .white-piece`);
+        const emptySlotElement = boardElement.querySelector(`.slot[data-index="${emptySlotIndex}"]`);
+
+        if(pieceElement) {
+            pieceElement.classList.add('highlighted-piece');
+        }
+
+        if(emptySlotElement) {
+            emptySlotElement.classList.add('highlighted-slot');
+        }
+    }
+
+    //Remove o destaque visual de todas as peças e slots.
+    function removeHighlights() {
+        document.querySelectorAll('.highlighted-piece').forEach(el => el.classList.remove('highlighted-piece'));
+        document.querySelectorAll('.highlighted-slot').forEach(el => el.classList.remove('highlighted-slot'));
     }
 
     //Executa a sequência de movimentos pré-definida.
@@ -209,19 +244,26 @@ document.addEventListener('DOMContentLoaded', () => {
     async function executeSolution() {
         resetGame(); //Reinicia o jogo antes de executar a solução
         displayMessage('Executando a solução...', 'info');
+        executeSolutionButton.disabled = true; //Desabilita o botão durante a execução
 
         for(let i = 0; i < solutionSequence.length; i++) {
             const move = solutionSequence[i];
             const startIndex = move.from;
-            const targetIndex = currentBoardState.indexOf(''); // O slot vazio é sempre o alvo
+            const emptySlotIndex = currentBoardState.indexOf(''); //O slot vazio é sempre o alvo
+
+            displayStep(`Passo ${i + 1} de ${solutionSequence.length}: Mover de ${startIndex} para ${emptySlotIndex}`);
+            highlightElements(startIndex, emptySlotIndex); //Destaca as peças envolvidas
+
+            await new Promise(resolve => setTimeout(resolve, 800)); //Atraso para visualização do destaque
 
             //Verifica se o movimento é válido antes de executá-lo
-            //Isso é importante porque a sequência pode ter sido gerada para um estado específico e o isValidMove verifica o estado atual do tabuleiro.
-            if(isValidMove(startIndex, targetIndex)) {
-                movePiece(startIndex, targetIndex);
-                await new Promise(resolve => setTimeout(resolve, 500)); //Pequeno atraso para visualização
+            if(isValidMove(startIndex, emptySlotIndex)) {
+                movePiece(startIndex, emptySlotIndex);
+                removeHighlights(); //Remove o destaque após o movimento
+                await new Promise(resolve => setTimeout(resolve, 500)); //Pequeno atraso após o movimento
             } else {
-                displayMessage(`Falha na solução: Movimento inválido na etapa ${i + 1} (de ${startIndex} para ${targetIndex}).`, 'error');
+                displayMessage(`Falha na solução: Movimento inválido na etapa ${i + 1} (de ${startIndex} para ${emptySlotIndex}).`, 'error');
+                removeHighlights();
                 break; //Para a execução se um movimento for inválido
             }
         }
@@ -231,6 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             displayMessage('A execução da solução terminou, mas o problema não foi resolvido.', 'error');
         }
+        executeSolutionButton.disabled = false; //Habilita o botão novamente
     }
 
     //Adiciona os event listeners para os botões

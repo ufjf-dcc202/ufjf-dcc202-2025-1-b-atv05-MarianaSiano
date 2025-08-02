@@ -4,7 +4,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 700px;
     background-color: #F0F0F0;
     margin: 0;
     padding: 20px;
@@ -18,8 +18,8 @@ h1 {
 
 #board {
     display: flex;
-    border: 2px solid #333333;
-    background-color: #EEEEEE;
+    border: 2px solid #333;
+    background-color: #eee;
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -65,6 +65,18 @@ h1 {
     box-shadow: 0 0 10px blue;
 }
 
+/* Novo estilo para destacar as peças durante a execução da solução */
+.highlighted-piece {
+    border: 3px solid green;
+    box-shadow: 0 0 15px green;
+}
+
+.highlighted-slot {
+    background-color: #AAFFAA; /* Um verde claro para o slot vazio destacado */
+    border: 3px solid green;
+}
+
+
 p {
     margin-top: 10px;
     font-size: 18px;
@@ -83,7 +95,7 @@ button {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    background-color: #007BFF;
+    background-color: #007;
     color: white;
     transition: background-color 0.3s ease;
 }
@@ -92,21 +104,35 @@ button:hover {
     background-color: #0056B3;
 }
 
-#game-messages {
+#game-status {
+    text-align: center;
     margin-top: 15px;
-    font-size: 19px;
+}
+
+#game-messages {
+    font-size: 1.2em;
     font-weight: bold;
     color: #D9534F; /* Cor padrão para mensagens de erro/informação */
-    text-align: center;
     min-height: 25px; /* Garante que o espaço seja reservado */
+}
+
+#step-counter {
+    font-size: 1em;
+    color: #666666;
+    margin-top: 5px;
+    min-height: 20px;
 }
 
 .message-success {
     color: #5CB85C; /* Cor para mensagens de sucesso */
 }
 
+.message-info {
+    color: #5BB0DE; /* Cor para mensagens de informação */
+}
+
 /* Responsividade para telas menores */
-@media(max-width: 400px) {
+@media (max-width: 400px) {
     .slot {
         width: 50px;
         height: 50px;
@@ -119,11 +145,11 @@ button:hover {
     }
 
     h1 {
-        font-size: 1.8em;
+        font-size: 29px;
     }
 
     p {
-        font-size: 1em;
+        font-size: 16px;
     }
 
     .button-container {
