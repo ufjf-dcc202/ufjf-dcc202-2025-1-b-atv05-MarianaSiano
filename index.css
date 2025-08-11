@@ -5,21 +5,29 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 700px;
-    background-color: #F0F0F0;
+    background-color: #D8BFD8;
     margin: 0;
     padding: 20px;
     box-sizing: border-box;
 }
 
 h1 {
-    color: #333333;
+    color: #007;
     margin-bottom: 20px;
+}
+
+h2 {
+    color: black;
+}
+
+h3 {
+    color: #F08080;
 }
 
 #board {
     display: flex;
-    border: 2px solid #333;
-    background-color: #eee;
+    border: 2px solid #FFF0F5;
+    background-color: #FFDAB9;
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -31,8 +39,8 @@ h1 {
 .slot {
     width: 60px;
     height: 60px;
-    border: 1px solid #999999;
-    background-color: #CCCCCC;
+    border: 1px solid;
+    background-color: #B0C4DE;
     margin: 5px;
     display: flex;
     align-items: center;
@@ -67,20 +75,33 @@ h1 {
 
 /* Novo estilo para destacar as peças durante a execução da solução */
 .highlighted-piece {
-    border: 3px solid green;
-    box-shadow: 0 0 15px green;
+    border: 3px solid rgb(175, 238, 238);
+    box-shadow: 0 0 15px rgb(175, 238, 238);
 }
 
 .highlighted-slot {
-    background-color: #AAFFAA; /* Um verde claro para o slot vazio destacado */
-    border: 3px solid green;
+    background-color: #90EE90;
+    border: 3px solid rgb(175, 238, 238);
 }
 
 
 p {
     margin-top: 10px;
     font-size: 18px;
-    color: #555555;
+    color: #FFEBCD;
+}
+
+#name-matr {
+    color: #007;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#frase {
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
 }
 
 .button-container {
@@ -118,7 +139,7 @@ button:hover {
 
 #step-counter {
     font-size: 1em;
-    color: #666666;
+    color: blue;
     margin-top: 5px;
     min-height: 20px;
 }
